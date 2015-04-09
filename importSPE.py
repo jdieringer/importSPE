@@ -2,7 +2,6 @@ import struct
 import xml.etree.ElementTree as ET
 import numpy as np
 
-file = u'C:/Users/jdieringer/Desktop/Au glass coverslip low lamp_LowNoise_1MHz_AGLow_2s_BI3_100frames_450750_ 2014 December 18 13_53_58.spe'
 f = open(file,"rb")
 f.seek(1992)
 SPE_version = struct.unpack('f',f.read(4))[0]
