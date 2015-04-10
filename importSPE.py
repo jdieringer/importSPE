@@ -45,10 +45,13 @@ def importSPE(file):
     # Determine the data format
     if datablockroot.get('pixelFormat')=='MonochromeFloating32':
    	dataformat = 'f'
+   	div = 4
     elif datablockroot.get('pixelFormat')=='MonochromeUnsigned32':
 	dataformat = 'I'
+	div = 4
     elif datablockroot.get('pixelFormat')=='MonochromeUnsigned16':
 	dataformat = 'H'
+	div = 2
     else:
 	dataformat = ''
 
@@ -73,7 +76,7 @@ def importSPE(file):
 	buffer = np.zeros((roi_height[r],roi_width[r],n_frames))
 	for fr in range(n_frames):
 	   f.seek(4100+fr*frame_stride+roi_stride_sum[r])
-	   buffer[:,:,fr] = np.reshape(struct.unpack(str(roi_size[r]/2)+dataformat,f.read(roi_size[r])),(roi_height[r],roi_width[r]))
+	   buffer[:,:,fr] = np.reshape(struct.unpack(str(roi_size[r]/div)+dataformat,f.read(roi_size[r])),(roi_height[r],roi_width[r]))
 	data.append(buffer)
 	buffer = None
 
