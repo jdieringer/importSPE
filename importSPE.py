@@ -57,24 +57,23 @@ def importSPE(file):
     roi_stride = np.zeros(n_roi,dtype='int32')
     roi_height = np.zeros(n_roi,dtype='int32')
     roi_width = np.zeros(n_roi,dtype='int32')
-
+    
+    data = []
     for i in range(n_roi):
 	roi_size[i] = int(datablockroot.getchildren()[i].get('size'))
 	roi_stride[i] = int(datablockroot.getchildren()[i].get('stride'))
 	roi_height[i] = int(datablockroot.getchildren()[i].get('height'))
 	roi_width[i] = int(datablockroot.getchildren()[i].get('width'))
+	data.append(np.zeros((roi_height[r],roi_width[r],n_frames)))
 
     roi_stride_sum = np.cumsum(np.insert(roi_stride,0,0))
 
-    # Read out the data ROI by ROI and append to the list 'data'	
-    data = []
-    for r in range(n_roi):
-	buffer = np.zeros((roi_height[r],roi_width[r],n_frames))
-	for fr in range(n_frames):
+    # Read out the data ROI by ROI and insert to the list 'data'	
+    
+    for fr in range(n_frames):
+	for r in range(n_roi):
 	   f.seek(4100+fr*frame_stride+roi_stride_sum[r])
-	   buffer[:,:,fr] = np.reshape(struct.unpack(str(roi_size[r]/div)+dataformat,f.read(roi_size[r])),(roi_height[r],roi_width[r]))
-	data.append(buffer)
-	buffer = None
+	   data[r][:,:,fr] = np.reshape(struct.unpack(str(roi_size[r]/div)+dataformat,f.read(roi_size[r])),(roi_height[r],roi_width[r]))
 
     # Close the SPE file		
     f.close()
