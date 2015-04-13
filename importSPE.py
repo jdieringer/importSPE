@@ -64,7 +64,7 @@ def importSPE(file):
 	roi_stride[i] = int(datablockroot.getchildren()[i].get('stride'))
 	roi_height[i] = int(datablockroot.getchildren()[i].get('height'))
 	roi_width[i] = int(datablockroot.getchildren()[i].get('width'))
-	data.append(np.zeros((roi_height[r],roi_width[r],n_frames)))
+	data.append(np.zeros((roi_height[i],roi_width[i],n_frames)))
 
     roi_stride_sum = np.cumsum(np.insert(roi_stride,0,0))
 
