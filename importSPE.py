@@ -30,16 +30,13 @@ def importSPE(file):
 	
     # Find the location of the xml containing the data formatting and read it out	
     f.seek(678)
-    xml_offset = struct.unpack('Q',f.read(8))[0]
-    f.seek(xml_offset)
-    xml = f.read()
-    tree = ET.fromstring(xml);
+    f.seek(struct.unpack('Q',f.read(8))[0])
+    tree = ET.fromstring(f.read());
 	
     # This DataBlock contains the frame information and its children the ROI information
     datablockroot = tree.findall('{http://www.princetoninstruments.com/spe/2009}DataFormat')[0].getchildren()[0]
     n_roi = len(datablockroot.getchildren())
     n_frames = int(datablockroot.get('count'))
-    frame_size = int(datablockroot.get('size'))
     frame_stride = int(datablockroot.get('stride'))
 
     # Determine the data format
@@ -53,7 +50,7 @@ def importSPE(file):
 	dataformat = 'H'
 	div = 2
     else:
-	dataformat = ''
+	return 'SPE pixel format unsupported';
 
     # Collect information about the ROIs		
     roi_size = np.zeros(n_roi,dtype='int32')
@@ -67,8 +64,7 @@ def importSPE(file):
 	roi_height[i] = int(datablockroot.getchildren()[i].get('height'))
 	roi_width[i] = int(datablockroot.getchildren()[i].get('width'))
 
-    roi_stride_offset = np.insert(roi_stride,0,0)
-    roi_stride_sum = np.cumsum(roi_stride_offset)
+    roi_stride_sum = np.cumsum(np.insert(roi_stride,0,0))
 
     # Read out the data ROI by ROI and append to the list 'data'	
     data = []
